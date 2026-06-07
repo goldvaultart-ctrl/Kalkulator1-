@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор заказа · 3D-печать</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f0f;
+    font-family: 'Courier New', monospace;
+    color: #f0ede8;
+    padding: 24px 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  .header { margin-bottom: 32px; }
+  .header-top { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .header-tag { font-size: 11px; letter-spacing: 4px; color: #888; text-transform: uppercase; }
+  .header-line { flex: 1; height: 1px; background: #333; }
+  h1 { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+  .subtitle { font-size: 12px; color: #666; margin-top: 4px; letter-spacing: 2px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .col { display: flex; flex-direction: column; gap: 16px; }
+  .section {
+    background: #161616;
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid #222;
+    margin-bottom: 16px;
+  }
+  .section-label {
+    font-size: 10px; letter-spacing: 3px; color: #555;
+    margin-bottom: 12px; text-transform: uppercase;
+  }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mat-btn, .post-btn, .markup-btn {
+    border: 2px solid #333; background: transparent; color: #666;
+    border-radius: 4px; cursor: pointer; font-family: 'Courier New', monospace;
+    transition: all 0.15s; text-align: center;
+  }
+  .mat-btn { padding: 10px 20px; font-weight: 700; font-size: 13px; letter-spacing: 1px; }
+  .mat-btn small, .post-btn small, .markup-btn small {
+    display: block; font-weight: 400; opacity: 0.8; font-size: 10px;
+  }
+  .post-btn { padding: 8px 16px; font-size: 12px; }
+  .markup-btn { flex: 1; padding: 10px 4px; font-weight: 700; font-size: 13px; }
+  .markup-btn small { font-size: 9px; opacity: 0.7; }
+  .slider-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .slider-val { font-size: 22px; font-weight: 900; }
+  .slider-unit { font-size: 12px; color: #666; align-self: flex-end; }
+  input[type=range] { width: 100%; cursor: pointer; }
+  .slider-minmax { display: flex; justify-content: space-between; margin-top: 4px; }
+  .slider-minmax span { font-size: 10px; color: #444; }
+  .param-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .param-label { font-size: 12px; color: #888; }
+  .toggle {
+    width: 44px; height: 24px; border-radius: 12px; background: #333;
+    position: relative; cursor: pointer; transition: background 0.2s;
+  }
+  .toggle.on { }
+  .toggle-knob {
+    width: 18px; height: 18px; border-radius: 50%; background: #fff;
+    position: absolute; top: 3px; left: 3px; transition: left 0.2s;
+  }
+  .toggle.on .toggle-knob { left: 23px; }
+  .qty-ctrl { display: flex; align-items: center; gap: 8px; }
+  .qty-btn {
+    width: 28px; height: 28px; border: 1px solid #444; background: #222;
+    color: #f0ede8; border-radius: 4px; cursor: pointer; font-size: 16px;
+    font-family: 'Courier New', monospace;
+  }
+  .qty-val { font-size: 16px; font-weight: 700; min-width: 32px; text-align: center; }
+  .result {
+    border-radius: 8px; padding: 24px; transition: all 0.3s;
+  }
+  .result-label {
+    font-size: 11px; letter-spacing: 4px; margin-bottom: 16px; text-transform: uppercase;
+  }
+  .breakdown { margin-bottom: 20px; }
+  .row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .row span { font-size: 12px; color: #888; }
+  .divider { height: 1px; background: #333; margin: 12px 0; }
+  .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .price-box { background: #1a1a1a; border-radius: 6px; padding: 16px; }
+  .price-box-label { font-size: 10px; color: #666; letter-spacing: 2px; margin-bottom: 4px; }
+  .price-box-val { font-size: 24px; font-weight: 900; }
+  .discount-box {
+    background: #1a2a1a; border: 1px solid #3ae87c44; border-radius: 6px;
+    padding: 12px; margin-bottom: 12px;
+  }
+  .discount-label { font-size: 11px; color: #3ae87c; margin-bottom: 4px; }
+  .discount-val { font-size: 20px; font-weight: 900; color: #3ae87c; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-box { background: #1a1a1a; border-radius: 6px; padding: 12px; }
+  .stat-label { font-size: 10px; color: #666; letter-spacing: 1px; margin-bottom: 2px; }
+  .stat-val { font-size: 18px; font-weight: 700; }
+  .footer {
+    font-size: 10px; color: #444; text-align: center;
+    letter-spacing: 2px; padding: 8px 0;
+  }
+  @media (max-width: 600px) {
+    .grid2, .price-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="header-top">
+      <span class="header-tag">3D-печать</span>
+      <div class="header-line"></div>
+    </div>
+    <h1>КАЛЬКУЛЯТОР ЗАКАЗА</h1>
+    <p class="subtitle">КРАСНОДАР · SOVOL SV08 MAX</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Материал</div>
+    <div class="btn-row" id="materials"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="section">
+      <div class="section-label">Вес детали (г)</div>
+      <div class="slider-head">
+        <span class="slider-val" id="weightVal">100</span>
+        <span class="slider-unit">г</span>
+      </div>
+      <input type="range" id="weight" min="5" max="2000" step="5" value="100">
+      <div class="slider-minmax"><span>5г</span><span>2000г</span></div>
+    </div>
+    <div class="section">
+      <div class="section-label">Время печати (ч)</div>
+      <div class="slider-head">
+        <span class="slider-val" id="hoursVal">2.00</span>
+        <span class="slider-unit">ч</span>
+      </div>
+      <input type="range" id="hours" min="0.25" max="48" step="0.25" value="2">
+      <div class="slider-minmax"><span>0.25ч</span><span>48ч</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Постобработка</div>
+    <div class="btn-row" id="postProcessing"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="section">
+      <div class="section-label">Наценка</div>
+      <div class="btn-row" id="markup"></div>
+    </div>
+    <div class="section">
+      <div class="section-label">Параметры</div>
+      <div class="param-row">
+        <span class="param-label">Срочно (+50%)</span>
+        <div class="toggle" id="urgent"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="param-row">
+        <span class="param-label">Количество</span>
+        <div class="qty-ctrl">
+          <button class="qty-btn" id="qtyMinus">−</button>
+          <span class="qty-val" id="qtyVal">1</span>
+          <button class="qty-btn" id="qtyPlus">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-label" id="resultLabel">Результат расчёта</div>
+    <div class="breakdown" id="breakdown"></div>
+    <div class="price-grid">
+      <div class="price-box">
+        <div class="price-box-label">ЦЕНА ЗА ШТ</div>
+        <div class="price-box-val" id="pricePerUnit">—</div>
+      </div>
+      <div class="price-box">
+        <div class="price-box-label" id="totalLabel">ИТОГО</div>
+        <div class="price-box-val" id="totalPrice" style="color:#f0ede8">—</div>
+      </div>
+    </div>
+    <div id="discountWrap"></div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-label">ПРИБЫЛЬ</div>
+        <div class="stat-val" id="profit">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">МАРЖА</div>
+        <div class="stat-val" id="margin">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    МАШИНО-ЧАС: 52 ₽ · ЭЛЕКТРИЧЕСТВО: 6 ₽/кВт · АМОРТИЗАЦИЯ: ~48 ₽/ч
+  </div>
+</div>
+
+<script>
+const MATERIALS = {
+  PLA:  { name: "PLA",  pricePerG: 1.80, color: "#e87c3a" },
+  PETG: { name: "PETG", pricePerG: 0.75, color: "#3a9ee8" },
+  TPU:  { name: "TPU",  pricePerG: 2.50, color: "#8b3ae8" },
+  ABS:  { name: "ABS",  pricePerG: 1.20, color: "#e83a3a" },
+  ASA:  { name: "ASA",  pricePerG: 1.50, color: "#3ae87c" },
+};
+const MACHINE_HOUR = 52;
+const POST = {
+  none:     { label: "Нет",              cost: 0 },
+  sanding:  { label: "Шлифовка",         cost: 300 },
+  painting: { label: "Покраска",         cost: 500 },
+  epoxy:    { label: "Эпоксидный лак",   cost: 400 },
+  full:     { label: "Полная обработка", cost: 800 },
+};
+const MARKUPS = [
+  { label: "×2", value: 2, hint: "Минимум" },
+  { label: "×3", value: 3, hint: "Стандарт" },
+  { label: "×5", value: 5, hint: "Декор" },
+  { label: "×7", value: 7, hint: "Серийный" },
+];
+
+let state = {
+  material: "PETG", weight: 100, hours: 2,
+  post: "none", markup: 3, urgent: false, qty: 1,
+};
+
+const fmt = n => Math.ceil(n / 10) * 10;
+
+function renderMaterials() {
+  const c = document.getElementById("materials");
+  c.innerHTML = "";
+  Object.entries(MATERIALS).forEach(([key, m]) => {
+    const b = document.createElement("button");
+    b.className = "mat-btn";
+    b.innerHTML = m.name + "<small>" + m.pricePerG.toFixed(2) + " ₽/г</small>";
+    const active = state.material === key;
+    b.style.borderColor = active ? m.color : "#333";
+    b.style.background = active ? m.color + "22" : "transparent";
+    b.style.color = active ? m.color : "#666";
+    b.onclick = () => { state.material = key; render(); };
+    c.appendChild(b);
+  });
+}
+
+function renderPost() {
+  const c = document.getElementById("postProcessing");
+  c.innerHTML = "";
+  Object.entries(POST).forEach(([key, p]) => {
+    const b = document.createElement("button");
+    b.className = "post-btn";
+    b.innerHTML = p.label + (p.cost > 0 ? "<small>+" + p.cost + " ₽</small>" : "");
+    const active = state.post === key;
+    b.style.borderColor = active ? "#f0ede8" : "#333";
+    b.style.background = active ? "#f0ede8" : "transparent";
+    b.style.color = active ? "#0f0f0f" : "#666";
+    b.style.fontWeight = active ? "700" : "400";
+    b.onclick = () => { state.post = key; render(); };
+    c.appendChild(b);
+  });
+}
+
+function renderMarkup() {
+  const c = document.getElementById("markup");
+  c.innerHTML = "";
+  const mat = MATERIALS[state.material];
+  MARKUPS.forEach(m => {
+    const b = document.createElement("button");
+    b.className = "markup-btn";
+    b.innerHTML = m.label + "<small>" + m.hint + "</small>";
+    const active = state.markup === m.value;
+    b.style.borderColor = active ? mat.color : "#333";
+    b.style.background = active ? mat.color + "22" : "transparent";
+    b.style.color = active ? mat.color : "#666";
+    b.onclick = () => { state.markup = m.value; render(); };
+    c.appendChild(b);
+  });
+}
+
+function render() {
+  const mat = MATERIALS[state.material];
+  renderMaterials();
+  renderPost();
+  renderMarkup();
+
+  document.getElementById("weightVal").textContent = state.weight;
+  document.getElementById("weightVal").style.color = mat.color;
+  document.getElementById("hoursVal").textContent = state.hours.toFixed(2);
+  document.getElementById("hoursVal").style.color = mat.color;
+  document.getElementById("weight").style.accentColor = mat.color;
+  document.getElementById("hours").style.accentColor = mat.color;
+
+  const tg = document.getElementById("urgent");
+  tg.className = "toggle" + (state.urgent ? " on" : "");
+  tg.style.background = state.urgent ? mat.color : "#333";
+
+  document.getElementById("qtyVal").textContent = state.qty;
+  document.getElementById("qtyVal").style.color = mat.color;
+
+  // calc
+  const materialCost = state.weight * mat.pricePerG;
+  const machineCost = state.hours * MACHINE_HOUR;
+  const postCost = POST[state.post].cost;
+  const costPerUnit = materialCost + machineCost + postCost;
+  const pricePerUnit = fmt(costPerUnit * state.markup * (state.urgent ? 1.5 : 1));
+  const totalCost = costPerUnit * state.qty;
+  const totalPrice = pricePerUnit * state.qty;
+  const profit = totalPrice - totalCost;
+  const margin = totalPrice > 0 ? Math.round((profit / totalPrice) * 100) : 0;
+  const discount = totalPrice >= 20000 ? 15 : totalPrice >= 10000 ? 10 : totalPrice >= 5000 ? 5 : 0;
+  const finalPrice = fmt(totalPrice * (1 - discount / 100));
+  const finalProfit = finalPrice - totalCost;
+
+  const res = document.getElementById("result");
+  res.style.border = "2px solid " + mat.color;
+  res.style.background = mat.color + "0a";
+  document.getElementById("resultLabel").style.color = mat.color;
+
+  let bd = "";
+  bd += rowHtml("Материал", Math.round(materialCost) + " ₽");
+  bd += rowHtml("Машино-время", Math.round(machineCost) + " ₽");
+  if (postCost > 0) bd += rowHtml("Постобработка", postCost + " ₽");
+  if (state.urgent) bd += rowHtml("Надбавка срочность", "+50%");
+  bd += '<div class="divider"></div>';
+  bd += rowHtml("Себестоимость × " + state.qty + " шт", Math.round(totalCost) + " ₽", true);
+  document.getElementById("breakdown").innerHTML = bd;
+
+  document.getElementById("pricePerUnit").textContent = pricePerUnit + " ₽";
+  document.getElementById("pricePerUnit").style.color = mat.color;
+  document.getElementById("totalLabel").textContent = "ИТОГО × " + state.qty;
+  document.getElementById("totalPrice").textContent = totalPrice + " ₽";
+
+  const dw = document.getElementById("discountWrap");
+  if (discount > 0) {
+    dw.innerHTML = '<div class="discount-box"><div class="discount-label">Скидка ' +
+      discount + '% применена</div><div class="discount-val">' + finalPrice + ' ₽</div></div>';
+  } else { dw.innerHTML = ""; }
+
+  const profitEl = document.getElementById("profit");
+  profitEl.textContent = Math.round(discount > 0 ? finalProfit : profit) + " ₽";
+  profitEl.style.color = discount > 0 ? "#3ae87c" : mat.color;
+
+  const marginEl = document.getElementById("margin");
+  marginEl.textContent = margin + "%";
+  marginEl.style.color = margin > 50 ? "#3ae87c" : margin > 30 ? mat.color : "#e83a3a";
+}
+
+function rowHtml(label, value, bold) {
+  return '<div class="row"><span>' + label + '</span><span style="color:' +
+    (bold ? "#f0ede8" : "#888") + ';font-weight:' + (bold ? "700" : "400") +
+    '">' + value + '</span></div>';
+}
+
+document.getElementById("weight").oninput = e => { state.weight = parseFloat(e.target.value); render(); };
+document.getElementById("hours").oninput = e => { state.hours = parseFloat(e.target.value); render(); };
+document.getElementById("urgent").onclick = () => { state.urgent = !state.urgent; render(); };
+document.getElementById("qtyMinus").onclick = () => { state.qty = Math.max(1, state.qty - 1); render(); };
+document.getElementById("qtyPlus").onclick = () => { state.qty = state.qty + 1; render(); };
+
+render();
+</script>
+</body>
+</html>
