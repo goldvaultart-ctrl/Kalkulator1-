@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="3D Эксперт">
+<meta name="theme-color" content="#0d0d0f">
+<title>3D Эксперт · SV08 MAX</title>
+<style>
+:root{
+  --bg:#0d0d0f; --card:#1a1a1e; --card2:#222228; --line:#2e2e36;
+  --txt:#f2f2f5; --mut:#9a9aa4; --acc:#e0964a; --acc2:#c8782d;
+  --good:#4caf78; --bad:#e06060; --r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.45;min-height:100%}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(80px + env(safe-area-inset-bottom)) env(safe-area-inset-left)}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+header{padding:18px 0 6px}
+header h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+header h1 span{color:var(--acc)}
+header p{color:var(--mut);font-size:13px;margin-top:2px}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,24,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:50}
+.tab{flex:1;text-align:center;color:var(--mut);font-size:10.5px;padding:4px 2px;border:none;background:none;cursor:pointer;transition:color .2s}
+.tab .ico{font-size:21px;display:block;margin-bottom:2px}
+.tab.act{color:var(--acc)}
+.page{display:none;animation:fade .25s ease}
+.page.act{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card h2{font-size:17px;font-weight:700;margin-bottom:10px}
+.card h2 em{font-style:normal;color:var(--acc)}
+label{display:block;color:var(--mut);font-size:12px;margin:10px 0 5px;text-transform:uppercase;letter-spacing:.5px}
+select,input[type=number]{width:100%;background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px;appearance:none;-webkit-appearance:none}
+.seg{display:flex;background:var(--card2);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:none;background:none;color:var(--mut);padding:9px 4px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.seg button.on{background:var(--acc2);color:#fff}
+.res{margin-top:14px}
+.row{display:flex;justify-content:space-between;padding:9px 2px;border-bottom:1px solid var(--line);font-size:14.5px}
+.row:last-child{border:none}
+.row b{color:var(--acc);font-weight:700;text-align:right}
+.note{background:rgba(224,150,74,.1);border:1px solid rgba(224,150,74,.3);border-radius:12px;padding:11px 13px;font-size:13.5px;color:#e8c9a4;margin-top:12px}
+.warnbox{background:rgba(224,96,96,.1);border:1px solid rgba(224,96,96,.35);border-radius:12px;padding:11px 13px;font-size:13.5px;color:#f0b0b0;margin-top:12px}
+.acc{border:1px solid var(--line);border-radius:14px;margin-bottom:9px;overflow:hidden;background:var(--card)}
+.acc-h{padding:14px 16px;font-weight:600;font-size:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.acc-h:after{content:'›';color:var(--mut);font-size:20px;transform:rotate(90deg);transition:transform .25s}
+.acc.open .acc-h:after{transform:rotate(-90deg)}
+.acc-b{display:none;padding:0 16px 14px;color:#cfcfd6;font-size:14.5px}
+.acc.open .acc-b{display:block}
+.acc-b h4{color:var(--acc);font-size:13px;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.4px}
+.acc-b ul{margin:4px 0 8px 18px}
+.acc-b li{margin-bottom:3px}
+.acc-b table{width:100%;border-collapse:collapse;margin:6px 0;font-size:12.5px}
+.acc-b th{text-align:left;color:var(--mut);font-weight:600;padding:5px 6px;border-bottom:1px solid var(--line)}
+.acc-b td{padding:5px 6px;border-bottom:1px solid #26262c}
+.search{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px;color:var(--txt);margin-bottom:12px}
+.pill{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--mut);margin:0 6px 6px 0}
+.big{font-size:30px;font-weight:800;color:var(--acc)}
+.kpi{display:flex;gap:10px;margin-top:10px}
+.kpi>div{flex:1;background:var(--card2);border-radius:12px;padding:12px;text-align:center}
+.kpi .v{font-size:19px;font-weight:800;color:var(--acc)}
+.kpi .l{font-size:11px;color:var(--mut);margin-top:2px}
+.hl{color:var(--acc);font-weight:600}
+footer{color:#55555e;font-size:11px;text-align:center;padding:20px 0 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>3D <span>Эксперт</span></h1>
+  <p>Sovol SV08 MAX · OrcaSlicer · персональная система Игоря</p>
+</header>
+
+<!-- ============ ПОДБОР НАСТРОЕК ============ -->
+<div class="page act" id="p-settings">
+  <div class="card">
+    <h2>Подбор настроек <em>печати</em></h2>
+    <label>Тип модели</label>
+    <select id="mtype">
+      <option value="vase">Ваза / кашпо</option>
+      <option value="decor" selected>Декор: розетка / панель / лепнина</option>
+      <option value="figure">Фигурка / скульптура</option>
+      <option value="mini">Миниатюра (до 50 мм)</option>
+      <option value="case">Корпус (посадки, электроника)</option>
+      <option value="bracket">Кронштейн / нагрузка</option>
+      <option value="gear">Шестерня / механизм</option>
+      <option value="organizer">Органайзер / лоток</option>
+      <option value="eng">Инженерная деталь (точность)</option>
+      <option value="pip">Подвижный print-in-place</option>
+    </select>
+    <label>Материал</label>
+    <select id="mat">
+      <option value="PLA" selected>PLA — декор, жёсткость</option>
+      <option value="PETG">PETG — влага, функционал</option>
+      <option value="TPU">TPU — гибкий</option>
+      <option value="ABS">ABS — термо, ударо (кожух!)</option>
+      <option value="ASA">ASA — улица, УФ (кожух!)</option>
+      <option value="PA">PA нейлон — макс. прочность (сушка!)</option>
+    </select>
+    <label>Приоритет</label>
+    <div class="seg" id="qseg">
+      <button data-q="draft">Скорость</button>
+      <button data-q="std" class="on">Стандарт</button>
+      <button data-q="fine">Качество</button>
+    </div>
+    <div class="res" id="profile"></div>
+    <div id="pnotes"></div>
+  </div>
+</div>
+
+<!-- ============ ДЕФЕКТЫ ============ -->
+<div class="page" id="p-defects">
+  <div class="card"><h2>Диагностика <em>дефектов</em></h2>
+  <input class="search" id="dsearch" placeholder="Поиск: стрингинг, коробление, слои…">
+  </div>
+  <div id="dlist"></div>
+</div>
+
+<!-- ============ БАЗА ЗНАНИЙ ============ -->
+<div class="page" id="p-kb">
+  <div class="card"><h2>База <em>знаний</em></h2>
+  <input class="search" id="ksearch" placeholder="Поиск по базе…">
+  </div>
+  <div id="klist"></div>
+</div>
+
+<!-- ============ КАЛЬКУЛЯТОР ============ -->
+<div class="page" id="p-calc">
+  <div class="card">
+    <h2>Калькулятор <em>себестоимости</em></h2>
+    <label>Материал</label>
+    <div class="seg" id="cmat">
+      <button data-p="1.80" class="on">PLA 1.80₽/г</button>
+      <button data-p="0.75">PETG 0.75₽/г</button>
+      <button data-p="3.50">TPU 3.50₽/г</button>
+    </div>
+    <label>Вес детали, г</label>
+    <input type="number" id="cw" value="300" min="1">
+    <label>Время печати, ч</label>
+    <input type="number" id="ch" value="6" min="0.25" step="0.25">
+    <label>Постобработка, ₽ (шлифовка 300 / покраска 500 / полная 800)</label>
+    <input type="number" id="cp" value="0" min="0" step="50">
+    <div class="res" id="cres"></div>
+    <div class="note">Машино-час 52 ₽ = электричество 3.6 ₽ + амортизация ~48 ₽. Наценки: ×2 минимум · ×3 стандарт · ×5 декор · ×7 мелкосерийка.</div>
+  </div>
+</div>
+
+<footer>3D Эксперт v1.0 · офлайн · база: июнь 2026 · Краснодар</footer>
+</div>
+
+<nav class="tabs">
+  <button class="tab act" data-p="p-settings"><span class="ico">⚙️</span>Настройки</button>
+  <button class="tab" data-p="p-defects"><span class="ico">🔍</span>Дефекты</button>
+  <button class="tab" data-p="p-kb"><span class="ico">📚</span>База</button>
+  <button class="tab" data-p="p-calc"><span class="ico">💰</span>Цена</button>
+</nav>
+
+<script>
+/* ================= ДАННЫЕ ================= */
+const MAT = {
+  PLA:{noz:[210,220],bed:[55,60],fan:'100%',fanFirst:'0% первые 1-2 слоя',ret:0.8,pa:'0.025–0.04',mvs:'20–28',dry:'45°C 4ч (если щёлкает)',notes:['Лучший для крашеного декора: шлифуется, держит грунт','Деформируется при 60°C — не для улицы и горячих ламп']},
+  PETG:{noz:[235,245],bed:[80,85],fan:'30–40%',fanFirst:'0% первые 3-4 слоя',ret:1.0,pa:'0.04–0.06',mvs:'15–22',dry:'65°C 4–6ч',notes:['Водостойкий — кашпо, автополив, улица под навесом','Кайма 8–10 мм «Снаружи» зазор 0 — обязательна для широких деталей (коробит!)','Стол протирать изопропилом','Тянет сопли: ретракт точный, температуру не завышать']},
+  TPU:{noz:[225,235],bed:[35,50],fan:'30–50%',fanFirst:'0%',ret:0.3,pa:'0.02–0.04 (или откл.)',mvs:'5–8',dry:'50°C 4ч',notes:['Скорость 30–60 мм/с максимум — иначе жуёт','Ретракт минимальный или 0','Подпятники, уплотнители, гибкие ножки']},
+  ABS:{noz:[245,260],bed:[100,110],fan:'0–20%',fanFirst:'0%',ret:1.2,pa:'0.03–0.05',mvs:'15–20',dry:'80°C 4ч',notes:['КОЖУХ ОБЯЗАТЕЛЕН + вентиляция (пары!)','Mouse ears / кайма против коробления','Ацетоновое сглаживание возможно','Усадка ~0.3%: учесть в точных посадках']},
+  ASA:{noz:[245,260],bed:[95,110],fan:'0–20%',fanFirst:'0%',ret:1.2,pa:'0.03–0.05',mvs:'15–20',dry:'80°C 4ч',notes:['Как ABS, но УФ-стойкий — всё уличное: фасады, сад','КОЖУХ ОБЯЗАТЕЛЕН']},
+  PA:{noz:[250,260],bed:[80,90],fan:'20–40%',fanFirst:'0%',ret:1.0,pa:'0.04–0.06',mvs:'12–18',dry:'СУШИТЬ ПЕРЕД КАЖДОЙ ПЕЧАТЬЮ 80°C 8–12ч',notes:['Максимальная прочность: шестерни, механизмы под нагрузкой','Влагу пьёт как губка — без сушки печать в брак','Адгезия: клей-карандаш на стекло/PEI']}
+};
+const TYPE = {
+  vase:{name:'Ваза / кашпо',layer:[0.3,0.3,0.24],walls:'1 (вазовый) / 3 (под воду)',infill:'0%',top:0,bottom:'4–5',spd:[200,150,120],sup:'НЕТ',extra:['Вазовый режим (Spiral Vase) для декоративных — чистый шов, быстро','Под воду/землю: ОБЫЧНЫЙ режим, 3 стенки, дно 5–6 слоёв','Meshy-модели с мусором внутри → ТОЛЬКО вазовый режим','PETG: кайма 8–10 мм обязательна']},
+  decor:{name:'Декор: розетка / панель',layer:[0.28,0.2,0.16],walls:'3',infill:'10–12%',top:3,bottom:3,spd:[180,130,100],sup:'ВКЛ под глубокий рельеф (древовидные)',extra:['Печать плашмя, лицом ВВЕРХ','Ironing (разглаживание) для видимых плоских верхов','Кайма 5 мм на широких розетках','Проверь МАСШТАБ купленных STL — бывают раздуты (498 мм вместо 350!)','PLA → грунт → матовая краска → матовый лак = «под гипс»']},
+  figure:{name:'Фигурка / скульптура',layer:[0.2,0.16,0.12],walls:'2–3',infill:'10–15% gyroid',top:4,bottom:3,spd:[150,110,80],sup:'Древовидные, угол 35°, зазор 0.2',extra:['Шов: «Сзади»','Замедление на нависаниях: ВКЛ']},
+  mini:{name:'Миниатюра <50 мм',layer:[0.12,0.1,0.08],walls:'2',infill:'10%',top:4,bottom:3,spd:[80,60,45],sup:'Древовидные тонкие',extra:['Мин. время слоя 8–10 с — иначе плавится','Печатать по 2–4 шт за раз (слой остывает)','Обдув 100% (PLA)']},
+  case:{name:'Корпус / посадки',layer:[0.24,0.2,0.16],walls:'3',infill:'25–30% grid',top:4,bottom:4,spd:[180,130,100],sup:'По необходимости',extra:['Precise Wall: ВКЛ (±0.05 мм)','Polyholes: ВКЛ — круглые отверстия точные','Компенсация отверстий X-Y: +0.1…0.2 мм','Материал: PETG']},
+  bracket:{name:'Кронштейн / нагрузка',layer:[0.28,0.24,0.2],walls:'4–5',infill:'40% gyroid',top:5,bottom:5,spd:[150,120,100],sup:'По геометрии',extra:['ПРОЧНОСТЬ В СТЕНКАХ, не в заполнении','ОРИЕНТАЦИЯ: слои поперёк нагрузки — межслойка слабое место','PETG: обдув 20–30% для адгезии слоёв','Серьёзная нагрузка → PA']},
+  gear:{name:'Шестерня / механизм',layer:[0.16,0.16,0.12],walls:'4+',infill:'50–60%',top:5,bottom:5,spd:[120,100,80],sup:'НЕТ (плашмя)',extra:['Материал: PETG или PA','Перед серией: калибровка Flow + PA + Tolerance','Шов: Random или во впадину зуба']},
+  organizer:{name:'Органайзер / лоток',layer:[0.3,0.28,0.2],walls:'2–3',infill:'10–15%',top:3,bottom:3,spd:[200,170,130],sup:'НЕТ',extra:['Скорость важнее красоты','На МП юнит-экономика на грани — проверяй цену']},
+  eng:{name:'Инженерная деталь',layer:[0.2,0.18,0.14],walls:'3–4',infill:'30–40%',top:4,bottom:4,spd:[140,110,90],sup:'По геометрии',extra:['Precise Wall + Polyholes: ВКЛ','ABS: масштаб +0.2–0.4% на усадку','Калибровка Flow и PA перед заказом — обязательна']},
+  pip:{name:'Print-in-place механизм',layer:[0.2,0.16,0.16],walls:'3',infill:'15%',top:4,bottom:3,spd:[130,100,90],sup:'НЕТ — убьют подвижность',extra:['Зазоры в модели мин 0.4–0.5 мм','Стрингинг склеит механизм: ретракт калибровать','Z-offset точный: слоновья нога склеит низ','Elephant foot compensation 0.15']}
+};
+const DEFECTS=[
+ {n:'Стрингинг (сопли, волоски)',s:'Тонкие нити между частями модели',f:['Ретракт +0.2–0.5 мм (PLA до 1.0, PETG до 1.2)','Температура −5…10°C','Сушка филамента (PETG 65°C 4–6ч)','Скорость холостых ходов 400–600 мм/с','Z-hop отключить или 0.2']},
+ {n:'Сопли/паутина ВНУТРИ полой модели',s:'Клубок нитей внутри вазы/кашпо при норм. внешних стенках',f:['Причина: битая внутренняя геометрия (Meshy, скульпты)','Решение 1: вазовый режим — игнорирует нутро','Решение 2: чинить STL (внутренние стенки, нулевая толщина)','Слайсер предупреждал «подвешенные части» — не игнорируй']},
+ {n:'Коробление (warping)',s:'Края задираются от стола, деталь ведёт',f:['Кайма (brim) «Снаружи» 8–10 мм, зазор 0','PETG: обдув 30–40%, первые слои 0%','Стол: PETG 85°C, ABS 100–110°C','Протереть стол изопропилом','ABS/ASA: кожух обязателен','Mouse Ears на углах']},
+ {n:'Слоновья нога',s:'Первые слои шире остальных',f:['Z-offset чуть выше','Elephant foot compensation 0.1–0.15 мм','Температура стола −5°C','Первый слой без передавливания']},
+ {n:'Расслоение (трещины по слоям)',s:'Слои не держатся, деталь ломается по слою',f:['Температура +5–10°C','Обдув меньше (PETG 20–30%, ABS 0%)','Скорость меньше','ABS/ASA: закрыть кожух, убрать сквозняк','MVS не превышать (PETG 15–22)']},
+ {n:'Пузырьки, треск, паутина',s:'Сопло трещит, поверхность рыхлая',f:['ФИЛАМЕНТ ВЛАЖНЫЙ — сушить','PLA 45°C 4ч · PETG 65°C 4–6ч · PA 80°C 8–12ч','Хранение: герметичный бокс + силикагель']},
+ {n:'Первый слой не липнет',s:'Отрывается, тянется за соплом',f:['Калибровка Z-offset','Изопропил на стол','Стол: PLA 60, PETG 85','Первый слой: 40–50 мм/с, высота 0.25–0.3','Клей-карандаш для PA/ABS']},
+ {n:'Слайсер «не видит» модель',s:'STL загружен, но модели нет/часть отсутствует',f:['ПРОВЕРЬ РАЗМЕР: Nomad/скульпты экспортят в микро-единицах (модель 2 мм!)','Масштабируй ×25–50 до реальных мм','Нулевая толщина стенок: поверхность не печатается — нужен Solidify/оболочка','Экспорт «всё/merge» — иначе уходит один слой']},
+ {n:'Кольца/волны на стенках (ghosting)',s:'Рябь после углов и деталей',f:['Ускорение внешних периметров 3000–5000','Скорость внешн. −20%','Проверить натяжение ремней','Input Shaper / резонансы Klipper откалибровать']},
+ {n:'Дыры в верхней поверхности',s:'Верх не закрывается, видно заполнение',f:['Верхних слоёв 4–5','Заполнение +5%','Ironing для гладкости','Мосты: скорость 50, обдув 100%']},
+ {n:'Под-экструзия',s:'Тонкие стенки, пропуски, рыхлость',f:['Калибровка Flow (Pass 1+2)','MVS не превышен? (скорость×слой×ширина)','Сопло забито: холодная протяжка','Филамент проскальзывает: прижим экструдера']},
+ {n:'Шов уродливый (seam)',s:'Вертикальный рубец на стенке',f:['Seam: «В углах» (спрятать в геометрии)','Scarf seam (Orca 2.0+) для ваз','Вазовый режим = вообще без шва','PA откалибровать — шов от давления']}
+];
+const KB=[
+ {t:'Калибровка: порядок (SV08 MAX)',b:'<h4>Последовательность</h4><ul><li>1. Z-offset (на принтере)</li><li>2. Bed leveling — автомат</li><li>3. Температурная башня филамента</li><li>4. <b>Flow Rate</b> — первым из «сложных», остальные зависят</li><li>5. Pressure Advance (CoreXY: 0.02–0.08)</li><li>6. Ретракция</li><li>7. Tolerance (допуски посадок)</li><li>8. Max Volumetric Speed</li><li>9. VFA (вертикальные артефакты)</li></ul><h4>Когда повторять</h4><ul><li>Новый филамент (даже та же марка, другой цвет!) → Flow + темп</li><li>Смена сопла → всё с п.3</li><li>Раз в 2–3 мес профилактически</li></ul>'},
+ {t:'Материалы: шпаргалка выбора',b:'<table><tr><th>Задача</th><th>Материал</th></tr><tr><td>Декор, розетки, молдинги</td><td>PLA</td></tr><tr><td>Влага, кашпо, автополив</td><td>PETG</td></tr><tr><td>Гибкое (ножки, уплотнители)</td><td>TPU</td></tr><tr><td>Нагрев до 100°C, авто</td><td>ABS</td></tr><tr><td>Улица, УФ, фасады</td><td>ASA</td></tr><tr><td>Механизмы, макс. нагрузка</td><td>PA</td></tr></table><h4>Хранение</h4><ul><li>Все — герметичный бокс + силикагель</li><li>PA сушить ПЕРЕД КАЖДОЙ печатью</li></ul><h4>Сопла</h4><ul><li>Латунь: PLA, PETG, TPU, ABS, ASA, PA</li><li>Закалённое ОБЯЗАТЕЛЬНО: все CF/GF (углё/стекло)</li></ul>'},
+ {t:'OrcaSlicer: ключевые функции',b:'<ul><li><b>Precise Wall</b> — точность ±0.05 мм (посадки, резьба)</li><li><b>Polyholes</b> — круглые отверстия в размер</li><li><b>Sandwich Mode</b> — чёткие внешние поверхности</li><li><b>Mouse Ears</b> — против коробления углов (ABS/ASA)</li><li><b>Ironing</b> — глажка верхних плоскостей (декор!)</li><li><b>Scarf Seam</b> — невидимый шов на вазах</li><li><b>Adaptive Layer</b> — переменный слой по кривизне</li><li><b>Spiral Vase</b> — вазовый режим: 1 стенка, без шва, игнор внутренней геометрии</li></ul><h4>Скачивать только</h4><ul><li>github.com/SoftFever/OrcaSlicer/releases</li><li>orcaslicer.net — НЕ официальный, вредоносный!</li></ul>'},
+ {t:'Скорости SV08 MAX (CoreXY 700мм/с)',b:'<table><tr><th>Линия</th><th>мм/с</th></tr><tr><td>Внешний периметр</td><td>100–150 (качество!)</td></tr><tr><td>Внутренние</td><td>200–300</td></tr><tr><td>Заполнение</td><td>200–400</td></tr><tr><td>Первый слой</td><td>40–60</td></tr><tr><td>Холостые</td><td>500–600</td></tr></table><p>Ускорения: внешн. 4000–6000, заполнение до 20000. Реальная скорость упирается в MVS пластика, не в кинематику.</p>'},
+ {t:'Высота слоя и заполнение (сопло 0.4)',b:'<table><tr><th>Режим</th><th>Слой</th></tr><tr><td>Детализация</td><td>0.08–0.12</td></tr><tr><td>Стандарт</td><td>0.16–0.20</td></tr><tr><td>Быстро</td><td>0.24–0.30</td></tr><tr><td>Черновик</td><td>0.32–0.40</td></tr></table><table><tr><th>Назначение</th><th>Заполнение</th></tr><tr><td>Декор</td><td>10–15%</td></tr><tr><td>Полая ёмкость</td><td>0%</td></tr><tr><td>Функционал</td><td>30–40%</td></tr><tr><td>Нагрузка</td><td>40–60% + стенки 4–5</td></tr></table>'},
+ {t:'Покраска под гипс (технология)',b:'<h4>5 шагов</h4><ul><li>1. Шлифовка P200 → P400</li><li>2. Обезжирить изопропилом, сушка 10 мин</li><li>3. Грунт аэрозоль 2 слоя, 20–25 см, интервал 15–20 мин</li><li>4. МАТОВАЯ белая акриловая 2–3 слоя (кисть — в рельеф)</li><li>5. МАТОВЫЙ лак 1–2 слоя. Сутки сушки</li></ul><h4>Секрет дорогого вида</h4><p>Патинирование: чуть серой/бежевой в углубления узора, стереть с выступов. Тени = объём «настоящей лепнины».</p><p>Набор ~1800–2500₽, хватает на десятки розеток. Только матовое! Глянец убивает эффект гипса. Аэрозоли — на улице/проветривание.</p>'},
+ {t:'STL: источники и проверка',b:'<h4>Розетки/лепнина (флагман) — покупать</h4><ul><li>stl24.com — 300–800₽, подгонка размера</li><li>stl.team — 20 000+ моделей</li><li>3d-stl.store — 500–2700₽ поштучно</li><li>printables.com — бесплатно для теста</li></ul><h4>Meshy.ai — только органика</h4><ul><li>Вазы, кашпо, ручки, арт-объекты — да</li><li>Розетки/молдинги (симметрия, повторы) — НЕТ</li><li>После генерации: проверить РАЗМЕР и нутро (мусор внутри → вазовый режим)</li></ul><h4>Чек-лист перед печатью чужого STL</h4><ul><li>Размер в мм адекватный?</li><li>Масштаб не раздут? (498 мм вместо 350)</li><li>Предупреждения слайсера прочитаны?</li><li>Лицензия на коммерцию (для продажи)</li></ul>'},
+ {t:'Скульпты из Nomad: подготовка к печати',b:'<h4>Обязательно перед экспортом</h4><ul><li>Придать ТОЛЩИНУ стенке (поверхность не печатается!) — Voxel remesh / оболочка ~2 мм</li><li>Экспорт STL с опцией «всё/merge»</li><li>Проверить размер в слайсере — Nomad отдаёт микро-единицы</li></ul><h4>Симптомы битой модели</h4><ul><li>«Слайсер не видит» → размер 2–5 мм</li><li>Паутина внутри → мусорная внутренняя геометрия → вазовый режим</li><li>Печать обрывками → нулевая толщина стенок → Solidify</li></ul>'},
+ {t:'Экономика печати (формулы)',b:'<p><b>Себестоимость</b> = Вес×Цена/г + Время×52₽ + Постобработка</p><p><b>Машино-час 52₽</b> = электричество 3.6 + амортизация 48</p><p><b>Цены/г:</b> PLA 1.80 · PETG 0.75 · TPU 3.50</p><h4>Наценки</h4><ul><li>×2 минимум · ×3 стандарт · ×5 декор · ×7 мелкосерийка</li></ul><h4>Лучшая прибыль на час принтера</h4><ul><li>Ручки партиями ~383₽/ч · Запчасти ~380₽/ч · Таблички ~255₽/ч</li></ul><h4>На маркетплейсах</h4><ul><li>Комиссия+логистика+реклама = 35–45% цены</li><li>Выживает чек от 1500₽ при себест. ≤30% цены</li></ul>'},
+ {t:'Klipper / автоматизация (на вырост)',b:'<ul><li>G-code по Wi-Fi напрямую из Orca</li><li>Moonraker REST API — удалённое управление, очередь</li><li>Камера: мониторинг + таймлапсы (контент!)</li><li>Возобновление после сбоя питания</li><li>Input Shaper: калибровка резонансов = выше скорость без ряби</li></ul><p>Ферма 3+ принтеров: один Mainsail/Fluidd дашборд на все, очередь заданий — когда выйдешь на серийку.</p>'}
+];
+/* ================= ЛОГИКА ================= */
+const $=s=>document.querySelector(s);const $$=s=>document.querySelectorAll(s);
+$$('.tab').forEach(t=>t.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('act'));t.classList.add('act');$$('.page').forEach(p=>p.classList.remove('act'));$('#'+t.dataset.p).classList.add('act');window.scrollTo({top:0})});
+let Q='std';
+$('#qseg').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('#qseg').querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');Q=b.dataset.q;renderProfile()});
+const qi={draft:0,std:1,fine:2};
+function renderProfile(){
+  const t=TYPE[$('#mtype').value],m=MAT[$('#mat').value],i=qi[Q];
+  const rows=[
+    ['Высота слоя',t.layer[i]+' мм'],
+    ['Стенки (периметры)',t.walls],
+    ['Заполнение',t.infill],
+    ['Верх / низ слоёв',t.top+' / '+t.bottom],
+    ['Внешний периметр',t.spd[i]+' мм/с'],
+    ['Сопло',m.noz[0]+'–'+m.noz[1]+'°C'],
+    ['Стол',m.bed[0]+'–'+m.bed[1]+'°C'],
+    ['Обдув',m.fan+' · '+m.fanFirst],
+    ['Ретракт (директ)',m.ret+' мм'],
+    ['Pressure Advance',m.pa],
+    ['Max Vol. Speed',m.mvs+' мм³/с'],
+    ['Поддержки',t.sup],
+    ['Сушка',m.dry]
+  ];
+  $('#profile').innerHTML=rows.map(r=>`<div class="row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('');
+  let n='';
+  const tips=[...t.extra,...m.notes];
+  if(tips.length)n+=`<div class="note"><b>Важно для этой связки:</b><br>• ${tips.join('<br>• ')}</div>`;
+  if(($('#mat').value==='ABS'||$('#mat').value==='ASA'))n+=`<div class="warnbox">⚠️ Кожух обязателен. Без него — расслоение и пары в комнате.</div>`;
+  if($('#mat').value==='PA')n+=`<div class="warnbox">⚠️ Нейлон без сушки перед КАЖДОЙ печатью = гарантированный брак.</div>`;
+  $('#pnotes').innerHTML=n;
+}
+$('#mtype').onchange=renderProfile;$('#mat').onchange=renderProfile;
+renderProfile();
+function renderDefects(q=''){
+  q=q.toLowerCase();
+  $('#dlist').innerHTML=DEFECTS.filter(d=>!q||d.n.toLowerCase().includes(q)||d.s.toLowerCase().includes(q)||d.f.join(' ').toLowerCase().includes(q))
+  .map(d=>`<div class="acc"><div class="acc-h">${d.n}</div><div class="acc-b"><p style="color:var(--mut);margin-bottom:6px">${d.s}</p><ul>${d.f.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>`).join('')||'<div class="card" style="color:var(--mut)">Не найдено</div>';
+  bindAcc('#dlist');
+}
+$('#dsearch').oninput=e=>renderDefects(e.target.value);
+function renderKB(q=''){
+  q=q.toLowerCase();
+  $('#klist').innerHTML=KB.filter(k=>!q||k.t.toLowerCase().includes(q)||k.b.toLowerCase().includes(q))
+  .map(k=>`<div class="acc"><div class="acc-h">${k.t}</div><div class="acc-b">${k.b}</div></div>`).join('')||'<div class="card" style="color:var(--mut)">Не найдено</div>';
+  bindAcc('#klist');
+}
+$('#ksearch').oninput=e=>renderKB(e.target.value);
+function bindAcc(root){$$(root+' .acc-h').forEach(h=>h.onclick=()=>h.parentElement.classList.toggle('open'))}
+renderDefects();renderKB();
+let PRICE=1.80;
+$('#cmat').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('#cmat').querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');PRICE=parseFloat(b.dataset.p);calc()});
+function calc(){
+  const w=parseFloat($('#cw').value)||0,h=parseFloat($('#ch').value)||0,p=parseFloat($('#cp').value)||0;
+  const cost=w*PRICE+h*52+p;
+  $('#cres').innerHTML=`
+  <div class="row"><span>Материал (${w} г)</span><b>${(w*PRICE).toFixed(0)} ₽</b></div>
+  <div class="row"><span>Машино-час (${h} ч × 52₽)</span><b>${(h*52).toFixed(0)} ₽</b></div>
+  ${p?`<div class="row"><span>Постобработка</span><b>${p} ₽</b></div>`:''}
+  <div class="row"><span><b>Себестоимость</b></span><b class="big">${cost.toFixed(0)} ₽</b></div>
+  <div class="kpi">
+    <div><div class="v">${(cost*2).toFixed(0)}₽</div><div class="l">×2 минимум</div></div>
+    <div><div class="v">${(cost*3).toFixed(0)}₽</div><div class="l">×3 стандарт</div></div>
+    <div><div class="v">${(cost*5).toFixed(0)}₽</div><div class="l">×5 декор</div></div>
+  </div>`;
+}
+$('#cw').oninput=calc;$('#ch').oninput=calc;$('#cp').oninput=calc;
+calc();
+</script>
+</body>
+</html>
